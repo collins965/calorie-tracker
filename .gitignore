@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pkl
+
+# Virtual environment
+venv/
+env/
+
+# Django migrations
+**/migrations/
+!*/migrations/__init__.py
+
+# Secret settings
+.env
+
+# SQLite (if used locally)
+*.sqlite3
+
+# IDE/editor configs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Compiled files
+*.log
+*.pot
+*.pyc
+*.mo
+*.so
+
+# Node.js (if using npm/yarn anywhere)
+node_modules/
+
+# Static & media root (optional if collected)
+staticfiles/
+media/
+
+# Render build/deploy files
+*.render-build/
+
+# Coverage reports
+htmlcov/
+coverage.xml
+*.cover
+*.py,cover
+.cache
+
+# Test & debug artifacts
+.tox/
+.pytest_cache/
