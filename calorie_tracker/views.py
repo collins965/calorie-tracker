@@ -105,4 +105,4 @@ def signup_view(request):
     return render(request, "signup.html", {"form": {}})
 def logout_view(request):
     logout(request)
-    return redirect('login')  # Change 'login' to your login page URL name
+    return redirect('login')  
