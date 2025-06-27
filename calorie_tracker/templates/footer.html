@@ -1,0 +1,16 @@
+<footer class="bg-indigo-600 shadow mt-12">
+  <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-white">
+    
+    <div class="mb-4 md:mb-0 text-center md:text-left">
+      <p>&copy; {% now "Y" %} CalorieTracker. All rights reserved.</p>
+    </div>
+
+    <div class="flex space-x-4">
+      <a href="{% url 'index' %}" class="hover:text-gray-300">Home</a>
+      <a href="{% url 'dashboard' %}" class="hover:text-gray-300">Dashboard</a>
+      <a href="{% url 'login' %}" class="hover:text-gray-300">Login</a>
+      <a href="{% url 'signup' %}" class="hover:text-gray-300">Sign Up</a>
+      <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
+    </div>
+  </div>
+</footer>

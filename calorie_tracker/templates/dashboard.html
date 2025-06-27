@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Calorie Tracker{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-bold text-indigo-600 mb-6 text-center">User Dashboard</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    <!-- Summary Card -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Today's Summary</h2>
+      <p class="text-gray-600">You consumed <span class="font-bold">{{ total_calories|default:"0" }}</span> calories today.</p>
+    </div>
+
+    <!-- Add Food Link -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Links</h2>
+      <a href="{% url 'index' %}" class="text-indigo-600 hover:underline">+ Add More Food Entries</a>
+    </div>
+  </div>
+
+  <!-- Recent Food Items -->
+  <div class="mt-10 bg-white shadow rounded-lg p-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Food Items</h2>
+    {% if items %}
+      <ul class="space-y-2">
+        {% for item in items %}
+          <li class="flex justify-between border-b py-2">
+            <span>{{ item.name }}</span>
+            <span class="text-gray-600">{{ item.calories }} kcal</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-500">No food items added today.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
