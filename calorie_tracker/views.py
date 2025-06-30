@@ -1,47 +1,58 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import FoodItem
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.contrib.auth import logout
+from django.contrib import messages
 
-# Track food for today
-@login_required
+# Public index + private tracking
 def index(request):
     today = timezone.now().date()
-    items = FoodItem.objects.filter(user=request.user, date_added=today)
-    total_calories = sum(item.calories for item in items)
+    items = []
+    total_calories = 0
 
-    if request.method == "POST":
-        if "reset" in request.POST:
-            items.delete()
-        else:
-            name = request.POST.get("name")
-            calories = request.POST.get("calories")
-            if name and calories.isdigit():
-                FoodItem.objects.create(
-                    name=name,
-                    calories=int(calories),
-                    user=request.user,
-                    date_added=today
-                )
-        return redirect("index")
+    if request.user.is_authenticated:
+        items = FoodItem.objects.filter(user=request.user, date_added=today)
+        total_calories = sum(item.calories for item in items)
+
+        if request.method == "POST":
+            if "reset" in request.POST:
+                items.delete()
+                messages.success(request, "All today's entries were reset.")
+            else:
+                name = request.POST.get("name")
+                calories = request.POST.get("calories")
+
+                # Validation
+                if not name or not calories:
+                    messages.error(request, "Both fields are required.")
+                elif not calories.isdigit() or int(calories) <= 0:
+                    messages.error(request, "Calories must be a positive number.")
+                else:
+                    FoodItem.objects.create(
+                        name=name.strip(),
+                        calories=int(calories),
+                        user=request.user,
+                        date_added=today
+                    )
+                    messages.success(request, f"Added {name} ({calories} kcal).")
+            return redirect("index")
 
     return render(request, "index.html", {
         "items": items,
         "total_calories": total_calories
     })
 
-
-# Delete item
+# Delete food item securely
 @login_required
 def delete_item(request, item_id):
-    FoodItem.objects.filter(id=item_id, user=request.user).delete()
+    item = get_object_or_404(FoodItem, id=item_id, user=request.user)
+    item.delete()
+    messages.success(request, f"Deleted '{item.name}' from today's list.")
     return redirect("index")
 
-
-# Dashboard page
+# Dashboard view — only for logged-in users
 @login_required
 def dashboard_view(request):
     today = timezone.now().date()
@@ -52,12 +63,9 @@ def dashboard_view(request):
         "total_calories": total_calories
     })
 
-
-# Redirect home to index
-@login_required
+# Home redirects to index
 def home_view(request):
     return redirect("index")
-
 
 # Login view
 def login_view(request):
@@ -71,9 +79,7 @@ def login_view(request):
         return render(request, "login.html", {
             "form": {}, "error": "Invalid username or password"
         })
-
     return render(request, "login.html", {"form": {}})
-
 
 # Signup view
 def signup_view(request):
@@ -83,19 +89,16 @@ def signup_view(request):
         password1 = request.POST.get("password1")
         password2 = request.POST.get("password2")
 
-        # Password match check
         if password1 != password2:
             return render(request, "signup.html", {
                 "form": {}, "error": "Passwords do not match"
             })
 
-        # Username already exists
         if User.objects.filter(username=username).exists():
             return render(request, "signup.html", {
                 "form": {}, "error": "Username already exists"
             })
 
-        # Create user
         user = User.objects.create_user(
             username=username, password=password1, email=email
         )
@@ -103,6 +106,27 @@ def signup_view(request):
         return redirect("dashboard")
 
     return render(request, "signup.html", {"form": {}})
+
+# Logout view
 def logout_view(request):
     logout(request)
-    return redirect('login')  
+    return redirect('login')
+
+@login_required
+def edit_item(request, item_id):
+    item = get_object_or_404(FoodItem, id=item_id, user=request.user)
+
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip()
+        calories = request.POST.get("calories")
+
+        if not name or not calories or not calories.isdigit() or int(calories) <= 0:
+            messages.error(request, "Invalid input. Ensure all fields are filled correctly.")
+        else:
+            item.name = name
+            item.calories = int(calories)
+            item.save()
+            messages.success(request, "Food item updated successfully.")
+            return redirect("index")
+
+    return render(request, "edit_item.html", {"item": item})

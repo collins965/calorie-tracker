@@ -1,0 +1,23 @@
+<!-- templates/edit_item.html -->
+{% extends "base.html" %}
+
+{% block title %}Edit Food Item{% endblock %}
+
+{% block content %}
+<section class="max-w-xl mx-auto py-10">
+  <h1 class="text-2xl font-bold text-indigo-600 mb-6">Edit Food Entry</h1>
+
+  <form method="POST" class="bg-white shadow rounded-lg p-6">
+    {% csrf_token %}
+    <label class="block mb-2 font-semibold text-gray-700">Food Name</label>
+    <input type="text" name="name" value="{{ item.name }}" required class="w-full mb-4 p-2 border rounded">
+
+    <label class="block mb-2 font-semibold text-gray-700">Calories</label>
+    <input type="number" name="calories" value="{{ item.calories }}" required class="w-full mb-4 p-2 border rounded">
+
+    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+      Update
+    </button>
+  </form>
+</section>
+{% endblock %}

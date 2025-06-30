@@ -6,36 +6,71 @@
 <section class="max-w-4xl mx-auto px-4 py-10">
   <h1 class="text-3xl font-bold text-indigo-600 mb-6 text-center">User Dashboard</h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    
-    <!-- Summary Card -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <h2 class="text-lg font-semibold text-gray-800 mb-4">Today's Summary</h2>
-      <p class="text-gray-600">You consumed <span class="font-bold">{{ total_calories|default:"0" }}</span> calories today.</p>
+  {% if user.is_authenticated %}
+    <!-- Logged-in User View -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Summary Card -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Today's Summary</h2>
+        <p class="text-gray-600">
+          You consumed <span class="font-bold">{{ total_calories|default:"0" }}</span> calories today.
+        </p>
+        <p class="text-sm text-gray-400 mt-2">Stay within your target for better health!</p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Links</h2>
+        <ul class="text-sm space-y-2">
+          <li><a href="{% url 'index' %}" class="text-indigo-600 hover:underline">+ Add More Food Entries</a></li>
+          <li><a href="{% url 'logout' %}" class="text-red-500 hover:underline">Log Out</a></li>
+        </ul>
+      </div>
     </div>
 
-    <!-- Add Food Link -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <h2 class="text-lg font-semibold text-gray-800 mb-4">Quick Links</h2>
-      <a href="{% url 'index' %}" class="text-indigo-600 hover:underline">+ Add More Food Entries</a>
+    <!-- Recent Food Items -->
+    <div class="mt-10 bg-white shadow rounded-lg p-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Food Items</h2>
+      {% if items %}
+        <ul class="space-y-2">
+          {% for item in items %}
+            <li class="flex justify-between border-b py-2">
+              <span>{{ item.name }}</span>
+              <span class="text-gray-600">{{ item.calories }} kcal</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-gray-500">No food items added today. Start tracking to view entries here.</p>
+      {% endif %}
     </div>
-  </div>
 
-  <!-- Recent Food Items -->
-  <div class="mt-10 bg-white shadow rounded-lg p-6">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Food Items</h2>
-    {% if items %}
-      <ul class="space-y-2">
-        {% for item in items %}
-          <li class="flex justify-between border-b py-2">
-            <span>{{ item.name }}</span>
-            <span class="text-gray-600">{{ item.calories }} kcal</span>
-          </li>
-        {% endfor %}
+    <!-- Extra: Benefits -->
+    <div class="mt-8 bg-white shadow rounded-lg p-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-2">Why Use Calorie Tracker?</h3>
+      <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
+        <li>Gain better control of your eating habits</li>
+        <li>Visualize your nutritional progress daily</li>
+        <li>Set and achieve realistic goals</li>
+        <li>Access from anywhere — fully mobile-friendly</li>
       </ul>
-    {% else %}
-      <p class="text-gray-500">No food items added today.</p>
-    {% endif %}
-  </div>
+    </div>
+
+  {% else %}
+    <!-- Guest View -->
+    <div class="bg-white shadow rounded-lg p-6 text-center">
+      <p class="text-lg font-semibold text-gray-700">Welcome to Calorie Tracker!</p>
+      <p class="text-gray-500 mt-2">
+        Track your food, stay fit, and maintain a healthy lifestyle.
+      </p>
+      <p class="text-sm mt-4">
+        <a href="{% url 'login' %}" class="text-indigo-600 hover:underline">Log in</a>
+        or
+        <a href="{% url 'signup' %}" class="text-indigo-600 hover:underline">Create an account</a>
+        to unlock your personalized dashboard.
+      </p>
+    </div>
+  {% endif %}
 </section>
 {% endblock %}
