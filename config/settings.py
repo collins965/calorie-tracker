@@ -16,7 +16,13 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'unsafe-default-key')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Allowed hosts
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost 127.0.0.1 .onrender.com').split()
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split() + [
+    'localhost',
+    '127.0.0.1',
+    'calorie-tracker-yr7b.onrender.com',
+    'calorie-tracker-2-ow4b.onrender.com', 
+]
+
 
 # Application definition
 INSTALLED_APPS = [
